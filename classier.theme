@@ -1,7 +1,5 @@
 <?php
 
-// Necessary to load terms.
-use Drupal\taxonomy\Entity\Term;
 // Necessary to ensure proper HTML classes.
 use Drupal\Component\Utility\Html;
 
@@ -16,15 +14,8 @@ function classier_preprocess_node(&$variables) {
   if ($node->getType() == 'article') {
     // Get the tags and their values.
     $field_tags = $node->field_tags;
-    $tags = $field_tags->getValue();
-    // Loop around each tag.
-    foreach ($tags as $tag) {
-      // Load the entire term so we have access to their
-      // name (otherwise we just have their term ID).
-      $term = Term::load($tag['target_id']);
-      // Create and add a new HTML class to the node
-      // based on the term name.
-      $variables['attributes']['class'][] = Html::getClass('term-' . $term->name->getString());
+    foreach ($field_tags->referencedEntities() as $tag) {
+      $variables['attributes']['class'][] = Html::getClass('term-' . $tag->name->value);
     }
   }
 }
